@@ -29,8 +29,7 @@ export const useAuth = ({ middleware = "guest", to }: From) => {
             .then(res => res.data)
             .catch((e) => {
                 throw new Error(e.response?.data?.message || 'Failed to fetch user data');
-            })
-    );
+            }));
 
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -86,18 +85,29 @@ export const useAuth = ({ middleware = "guest", to }: From) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('auth_token');
-        navigate('/login');
+
+        client.get('/logout', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        }).then(() => {
+            
+            localStorage.removeItem('auth_token');
+            setErrors([]);
+            mutate(null, false); // Revalidate the user data
+            navigate('/auth/login');
+        });
+
     };
 
     useEffect(() => {
         
         if (middleware === 'guest' && user) {
+            console.log('user', user);
             navigate(`/${to ?? 'shop'}`);
             return;
         }
 
         if (middleware === 'auth' && error) {
+            console.log('user', error);
             navigate('/auth/login');
             return;
         }

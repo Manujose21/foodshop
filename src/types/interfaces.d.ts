@@ -27,3 +27,19 @@ export interface User {
     updated_at: string
     
 }
+
+export interface Order {
+    id: number;
+    user_id: number;
+    total_price: string;
+    products: [
+        {
+            id: number;
+            category_id: number;
+            name: string;
+            price: number;
+            image: string;
+        }[]
+    ];
+    status: string;
+}

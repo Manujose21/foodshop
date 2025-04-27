@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { Category, Product } from '../types/interfaces';
+import { Category, Order, Product } from '../types/interfaces';
 import { client } from '../axios/client';
 import useSWR from 'swr';
 
@@ -10,6 +10,7 @@ interface Context {
     quantity: number;
     category: number;
     categories: Category[];
+    orders: Order[];
     addToCart: (item: Product) => void;
     removeFromCart: (item: Product) => void;
     clearCart: () => void;
@@ -25,6 +26,7 @@ const initialContex: Context = {
     quantity: 0,
     category: 0,
     categories: [],
+    orders: [],
     addToCart: () => {},
     removeFromCart: () => {},
     clearCart: () => {},
@@ -38,6 +40,7 @@ interface IState {
     category: number;
     products: Product[];
     categories: Category[];
+    orders: Order[];
     total: number;
     quantity: number;
 }
@@ -52,21 +55,36 @@ export const ShopProvider = ({ children  }: { children: React.ReactNode }) => {
         categories: [],
         total: 0,
         quantity: 0,
+        orders: [],
     });
 
-    const { data: response } = useSWR('/products', () => 
+    useSWR('/products', () => 
         client.get('/products')
         .then(res =>{
-             getProducts( res.data.data )
+             getProducts( res.data.data );
             return res.data;
         })
         .catch((e) => {
           throw new Error(e.response?.data?.message || 'Failed to fetch products data');
         }), {
-        refreshInterval: 30000, // 30 seconds
-      });
+        // refreshInterval: 30000, // 30 seconds
+    });
 
-   console.log(response);
+    useSWR('/orders', () => 
+        client.get('/orders', {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        })
+        .then(res =>{
+             getOrders( res.data.data );
+            return res.data;
+        })
+        .catch((e) => {
+          throw new Error(e.response?.data?.message || 'Failed to fetch products data');
+        }), {
+        // refreshInterval: 30000, // 30 seconds
+    });
+
+   
     const addToCart = (item: Product) => {
         setState((prevState: IState ) => {
             const updatedCart = [...prevState.cart, item];
@@ -91,19 +109,25 @@ export const ShopProvider = ({ children  }: { children: React.ReactNode }) => {
             category: prevState.category,
             products: prevState.products,
             categories: prevState.categories,
+            orders: prevState.orders,
             total: 0,
             quantity: 0,
         }));
     };
 
-    const getProducts = async ( response: Product[]) => {
+    const getProducts = async ( response: Product[] ) => {
         
-
         setState((prevState: IState) => {
             return { ...prevState, products: response };
         });
     }
 
+    const getOrders = async (  response: Order[] ) => {
+        
+        setState((prevState: IState) => {
+            return { ...prevState, orders: response };
+        });
+    }
 
     const getCategories = async () => {
         try {

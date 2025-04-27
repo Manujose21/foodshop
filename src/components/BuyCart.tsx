@@ -1,13 +1,53 @@
 import { useContext } from "react"
 import { Button } from "./Button"
 import ShopContext from "../context/useContextShop";
+import { client } from "../axios/client";
+import toast, { Toaster } from 'react-hot-toast';
 
 export const BuyCart = () => {
     const { cart, removeFromCart , total, clearCart } = useContext(ShopContext);
 
+
+    
+    const handleOrder = () => {
+        
+        if (cart.length === 0) {
+            return;
+        }
+
+        const order = {
+            products: cart.map((product) => ({
+                id: product.id,
+                category_id: product.category_id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+            })),
+            total_price: total,
+        };
+
+        client.post('/order', order, {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        }).then(() => {
+            clearCart();
+            toast.success('Pedido realizado con éxito', {
+                duration: 4000,
+                position: 'top-right',
+                style: {
+                    background: '#222222',
+                    color: '#fff',
+                },
+            });
+        }).catch((error) => {
+            console.error(error);
+        });
+
+    }
+
     return (
         <>
-            <aside className="bg-[#222222] text-white w-1/5 h-screen sticky top-0 right-0">
+            <aside className="bg-[#222222] text-white w-1/6 h-screen sticky top-0 right-0">
+                <Toaster />         
                 <div className="p-6 h-full flex flex-col justify-between">
                     <div className="flex flex-col gap-4">
                         <h1 className="text-xl font-semibold flex gap-4">
@@ -21,7 +61,7 @@ export const BuyCart = () => {
                             { cart.length === 0 
                             ? <p className="text-gray-400 text-center">No hay productos en el carrito</p> 
                             : cart.map((product) => (
-                                <div>
+                                <div key={product.id}>
                                     <img src={`/img/${product.image}.jpg`} alt={product.name} className="w-16 h-16 object-cover rounded-lg" />
                                     <div key={product.id} className="flex justify-between">
                                         <span>{product.name}</span>
@@ -43,7 +83,7 @@ export const BuyCart = () => {
                         } 
 
                         <div className="flex gap-4">
-                            <Button disabled={cart.length === 0} className="text-sm">
+                            <Button onClick={handleOrder} disabled={cart.length === 0} className="text-sm">
                                 Realizar pedido
                             </Button>
                             <Button disabled={cart.length === 0} className="text-sm bg-red-500 hover:bg-red-600" onClick={() => clearCart()}>

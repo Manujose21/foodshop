@@ -5,6 +5,7 @@ import { LoginPage } from './views/LoginPage';
 import { RegisterPage } from './views/Register';
 import { ShopPage } from './views/shop/ShopPage';
 import { AuthenticatedLayout } from './layouts/AuthenticatedLayout';
+import { OredersPage } from './views/shop/OrdersPage';
 
 const router = createBrowserRouter([
 
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
                     <ShopPage />
                 </> 
                 
+            },
+            {
+                path: "orders",
+                element: <OredersPage />
             }
         ],
     }

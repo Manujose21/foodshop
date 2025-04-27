@@ -1,5 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import { Category } from "../types/interfaces"
+import { PowerIcon } from "./icons/PowerIcon";
 interface Props {
     categories: Category[],
     categorySelected: number, 
@@ -8,7 +9,7 @@ interface Props {
 }
 export const Sidebar = ( { categories, categorySelected, filter }: Props ) => {
     
-    const { user, error } = useAuth({ middleware: 'auth' });
+    const { user, logout } = useAuth({ middleware: 'auth' });
     
     return (
         <>
@@ -37,6 +38,11 @@ export const Sidebar = ( { categories, categorySelected, filter }: Props ) => {
                             Todos 
                         </a>
                     </li>
+                    
+                    <span className="p-6 flex gap-2 text-sm cursor-pointer hover:bg-[#191919]" onClick={() => logout()}>
+                        <PowerIcon/>
+                        Cerrar sesión
+                    </span>
                 </ul>
             </aside>
         </>

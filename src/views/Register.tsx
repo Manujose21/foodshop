@@ -8,7 +8,7 @@ export const RegisterPage = () => {
     const { showing, handleShowPassword } = useShowingButton()
     const {  showing : showingConfirm ,  handleShowPassword: handleShowPasswordConfirm } = useShowingButton()
 
-    const { register } = useAuth({ middleware: 'guest', to: 'shop' });
+    const { register, errors } = useAuth({ middleware: 'guest', to: 'shop' });
 
     useEffect(() => {
         document.title = "Register - FoodShop"
@@ -35,12 +35,20 @@ export const RegisterPage = () => {
         register(data)
     }
 
+
     return (
         <>
             <div className="flex flex-col justify-center items-center gap-8 min-w-sm border bg-[#292929] border-gray-400 rounded-md min-h-[60vh] py-8 ">
                 <h1>Register</h1>
 
                 <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
+                    { errors && 
+                        <div className='text-red-500 text-sm'>
+                            { Object.values(errors).map((error, i) => (
+                                <p key={error+i}>{error}<br /></p>
+                        ))}
+                        </div>
+                    }
                     <label className='relative w-full'>
                         Email
                         <input type="text" placeholder='Email' name="email" className='w-full bg-[#242424] border border-gray-400 rounded-md p-2' />

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const client  = axios.create({  
-    baseURL: 'http://localhost/api',
+    baseURL: import.meta.env.VITE_API_URL,
     headers: {
         'Accept': 'application/json',
         'X-Requested-With': 'XMLHttpRequest',

@@ -1,19 +1,55 @@
-import { useContext, useEffect } from "react"
+import { useEffect } from "react"
 import { useAuth } from "../../hooks/useAuth"
-import ShopContext from "../../context/useContextShop";
+import useSWR from "swr";
+import { client } from "../../axios/client";
+import { Order } from "../../types/interfaces";
+import { Button } from "../../components/Button";
 
+interface Link {
+    next: string;
+    prev: string;
+    first: string;
+    last: string;
+} 
 
+interface PaginateOrder {
+    data: Order[];
+    links: Link;
+    meta: {
+        total: number;
+        to: number;
+        from: number;
+        current_page: number; 
+        last_page: number;
+        path: string;
+        per_page: number;
+        links: Link[];
 
+    };
+}
 export const OredersPage = () => {
 
-    const { user } = useAuth({ middleware: 'auth' });
-    const { orders } = useContext(ShopContext)
+    const { user } = useAuth();
+    const { data: orders } = useSWR<PaginateOrder>('/orders', () => 
+            client.get('/orders', {
+                headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+            })
+            .then(res =>{
+                console.log(res.data)
+                return res.data;
+            })
+            .catch((e) => {
+              throw new Error(e.response?.data?.message || 'Failed to fetch products data');
+            }), {
+            // refreshInterval: 30000, // 30 seconds
+        });
+    
 
     useEffect(() => {
         document.title = "Pedidos - FoodShop"
         window.scrollTo(0, 0)
     })
-    console.log(orders)
+    // console.log(orders)
     const formatStatus = (status: string) => {
         switch (status) {
             case 'pending':
@@ -40,12 +76,27 @@ export const OredersPage = () => {
         }  
     }
 
+    const handlePaginate = (url: string) => {
+        if (orders && orders?.meta.last_page > orders?.meta.current_page) {
+            client.get(url, {
+                headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+            })
+            .then(res =>{
+                console.log(res.data)
+                return res.data;
+            })
+            .catch((e) => {
+              throw new Error(e.response?.data?.message || 'Failed to fetch products data');
+            });
+        }
+    }
+
     return (
         <>
             <div className="px-12 py-8 m-auto max-w-[1440px] w-full ">
                 <h1 className="text-3xl font-bold mb-4">Pedidos de {user && user.name}</h1>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {orders.map((order) => (
+                    {orders && orders?.data.map((order) => (
                         <div key={order.id} className="shadow-md rounded-lg p-4 border border-gray-300">
                             <div>
                                 <div className="flex justify-between items-center mb-2">
@@ -56,11 +107,8 @@ export const OredersPage = () => {
                                 </div>
                                 <p className="font-semibold">Productos</p>
                                 <ul className="list-disc pl-5 mb-2">
-                                    {order.products.map((product) => (
-                                        
-                                        product.map((item) => (
-                                            <li key={item.id} className="text-sm">{item.name} - ${item.price}</li>
-                                        ))
+                                    {order.products.map((item) => (
+                                        <li key={item.id} className="text-sm">{item.name} - ${item.price}</li>                                        
                                     ))}
                                 </ul>
                                 <p className="font-semibold">Precio Total </p> 
@@ -69,6 +117,12 @@ export const OredersPage = () => {
                         </div>
                     ))}
                 </div>
+                {orders && (<>
+                    <div className="flex justify-center items-center mt-4 gap-1">
+                        <Button >anterior</Button>
+                        <Button onClick={() => handlePaginate(orders.links.next)}>anterior</Button>
+                    </div>
+                </>)}
             </div>
 
         </>

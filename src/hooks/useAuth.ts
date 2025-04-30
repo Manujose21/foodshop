@@ -1,13 +1,10 @@
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useNavigate } from "react-router"
 import { client } from "../axios/client";
 import { AxiosError } from "axios";
 import useSWR from "swr";
-interface From {
-    middleware?: "guest" | "auth",
-    to?: string,
-}
+
 
 interface Data {
     email?: string,
@@ -19,7 +16,7 @@ interface Data {
 }
 
 
-export const useAuth = ({ middleware = "guest", to }: From) => {
+export const useAuth = () => {
     const navigate = useNavigate();
 
     const { data: user, error, mutate } = useSWR('/user', () =>
@@ -34,6 +31,7 @@ export const useAuth = ({ middleware = "guest", to }: From) => {
     const [errors, setErrors] = useState<string[]>([]);
 
     const login = async (data: Data) => {
+        console.log('login', data);
         try {
             const userData = await client.post('/login', {
                 email: data.email,
@@ -46,7 +44,7 @@ export const useAuth = ({ middleware = "guest", to }: From) => {
             }
 
             localStorage.setItem('auth_token', userData.data.token);
-            await mutate();
+            navigate('/shop');
 
         } catch (error) {
             console.error(error);
@@ -98,21 +96,6 @@ export const useAuth = ({ middleware = "guest", to }: From) => {
 
     };
 
-    useEffect(() => {
-        
-        if (middleware === 'guest' && user) {
-            console.log('user', user);
-            navigate(`/${to ?? 'shop'}`);
-            return;
-        }
-
-        if (middleware === 'auth' && error) {
-            console.log('user', error);
-            navigate('/auth/login');
-            return;
-        }
-
-    }, [user, error]);
 
     return {
         login,

@@ -8,7 +8,7 @@ import { useAuth } from '../hooks/useAuth'
 export const LoginPage = () => {
 
     const { showing, handleShowPassword} = useShowingButton()
-    const { login, errors } = useAuth({ middleware: 'guest', to: 'shop' });
+    const { login, errors } = useAuth();
 
     useEffect(() => {
         document.title = "Inicia sesión - FoodShop"

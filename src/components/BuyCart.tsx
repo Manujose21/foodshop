@@ -3,12 +3,13 @@ import { Button } from "./Button"
 import ShopContext from "../context/useContextShop";
 import { client } from "../axios/client";
 import toast, { Toaster } from 'react-hot-toast';
+// import { useNavigate } from "react-router";
 
 export const BuyCart = () => {
+
     const { cart, removeFromCart , total, clearCart } = useContext(ShopContext);
-
-
-    
+    // const navigate = useNavigate();
+  
     const handleOrder = () => {
         
         if (cart.length === 0) {
@@ -29,6 +30,7 @@ export const BuyCart = () => {
         client.post('/order', order, {
             headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
         }).then(() => {
+
             clearCart();
             toast.success('Pedido realizado con éxito', {
                 duration: 4000,
@@ -38,6 +40,9 @@ export const BuyCart = () => {
                     color: '#fff',
                 },
             });
+
+            // navigate('/shop/orders');
+
         }).catch((error) => {
             console.error(error);
         });

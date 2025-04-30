@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { Category, Order, Product } from '../types/interfaces';
+import { Category, Product } from '../types/interfaces';
 import { client } from '../axios/client';
 import useSWR from 'swr';
 
@@ -10,7 +10,6 @@ interface Context {
     quantity: number;
     category: number;
     categories: Category[];
-    orders: Order[];
     addToCart: (item: Product) => void;
     removeFromCart: (item: Product) => void;
     clearCart: () => void;
@@ -26,7 +25,6 @@ const initialContex: Context = {
     quantity: 0,
     category: 0,
     categories: [],
-    orders: [],
     addToCart: () => {},
     removeFromCart: () => {},
     clearCart: () => {},
@@ -40,7 +38,6 @@ interface IState {
     category: number;
     products: Product[];
     categories: Category[];
-    orders: Order[];
     total: number;
     quantity: number;
 }
@@ -55,7 +52,6 @@ export const ShopProvider = ({ children  }: { children: React.ReactNode }) => {
         categories: [],
         total: 0,
         quantity: 0,
-        orders: [],
     });
 
     useSWR('/products', () => 
@@ -70,20 +66,7 @@ export const ShopProvider = ({ children  }: { children: React.ReactNode }) => {
         // refreshInterval: 30000, // 30 seconds
     });
 
-    useSWR('/orders', () => 
-        client.get('/orders', {
-            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
-        })
-        .then(res =>{
-             getOrders( res.data.data );
-            return res.data;
-        })
-        .catch((e) => {
-          throw new Error(e.response?.data?.message || 'Failed to fetch products data');
-        }), {
-        // refreshInterval: 30000, // 30 seconds
-    });
-
+    
    
     const addToCart = (item: Product) => {
         setState((prevState: IState ) => {
@@ -109,7 +92,6 @@ export const ShopProvider = ({ children  }: { children: React.ReactNode }) => {
             category: prevState.category,
             products: prevState.products,
             categories: prevState.categories,
-            orders: prevState.orders,
             total: 0,
             quantity: 0,
         }));
@@ -122,12 +104,7 @@ export const ShopProvider = ({ children  }: { children: React.ReactNode }) => {
         });
     }
 
-    const getOrders = async (  response: Order[] ) => {
-        
-        setState((prevState: IState) => {
-            return { ...prevState, orders: response };
-        });
-    }
+    
 
     const getCategories = async () => {
         try {

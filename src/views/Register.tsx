@@ -8,7 +8,7 @@ export const RegisterPage = () => {
     const { showing, handleShowPassword } = useShowingButton()
     const {  showing : showingConfirm ,  handleShowPassword: handleShowPasswordConfirm } = useShowingButton()
 
-    const { register, errors } = useAuth({ middleware: 'guest', to: 'shop' });
+    const { register, errors } = useAuth();
 
     useEffect(() => {
         document.title = "Register - FoodShop"

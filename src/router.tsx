@@ -6,6 +6,11 @@ import { RegisterPage } from './views/Register';
 import { ShopPage } from './views/shop/ShopPage';
 import { AuthenticatedLayout } from './layouts/AuthenticatedLayout';
 import { OredersPage } from './views/shop/OrdersPage';
+import { AdminLayout } from './layouts/AdminLayout';
+import { AOrdersPage } from './views/admin/AOrdersPage';
+import { AProductsPage } from './views/admin/AProductsPage';
+import { verifyIsAdmin } from './helpers/verifyIsAdmin';
+import { checkUser } from './helpers/checkUser';
 
 const router = createBrowserRouter([
 
@@ -35,6 +40,14 @@ const router = createBrowserRouter([
     {
         path: "/shop",
         element: <AuthenticatedLayout />,
+        loader: async () => {
+            const isAuth = await checkUser();
+            console.log(isAuth)
+            if (!isAuth) {
+                throw new Response('No autorizado', { status: 401 });
+            }
+            return isAuth;
+        },
         children: [
             {
                 index: true,
@@ -49,6 +62,31 @@ const router = createBrowserRouter([
                 element: <OredersPage />
             }
         ],
+    },
+    {
+        path: "/admin",
+        loader: async () => {
+            const isAuth = await verifyIsAdmin();
+            if (!isAuth) {
+                throw new Response('No autorizado', { status: 401 });
+            }
+            return isAuth;
+        },
+        element: <AdminLayout />,
+        children: [
+            {
+                index: true,
+                element:<></>
+            },
+            {
+                path: "orders",
+                element: <AOrdersPage />
+            },
+            {
+                path: "products",
+                element: <AProductsPage />
+            }
+        ]
     }
 
 ]);

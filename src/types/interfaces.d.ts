@@ -23,6 +23,7 @@ export interface User {
     address: string,
     phone: string,
     email_verified_at: string,
+    role: 'user' | 'admin',
     created_at: string,
     updated_at: string
     
@@ -39,7 +40,7 @@ export interface Order {
             name: string;
             price: number;
             image: string;
-        }[]
+        }
     ];
     status: string;
 }

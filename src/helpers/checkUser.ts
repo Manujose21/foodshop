@@ -14,8 +14,8 @@ export const checkUser = () => {
     return client.get('/user', {
         headers: { Authorization: `Bearer ${token}` }
     }).then((res: AxiosResponse<User>) => {
-        console.log(res.data)
-        if (res.data.id) {
+     
+        if (res.data.id && res.data.email_verified_at) {
             return res.data;
         }
     }).catch((e) => {

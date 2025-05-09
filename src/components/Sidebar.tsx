@@ -1,4 +1,4 @@
-import { useLoaderData } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import { useAuth } from "../hooks/useAuth";
 import { Category } from "../types/interfaces"
 import { PowerIcon } from "./icons/PowerIcon";
@@ -25,16 +25,32 @@ export const Sidebar = ( { categories, categorySelected, filter, isAdmin = false
                     
                     { isAdmin ?
                         
-                        <>
-                            <li>Ordenes</li>
-                            <li>Usuarios</li>
-                            <li>Productos</li>
-                            <li>Categorias</li>
-                        </>
+                        <div className="flex flex-col gap-2 p-6">
+                            <li className="cursor-pointer">
+                                <Link to={'/admin/orders'} className="flex gap-2 hover:bg-[#191919] rounded-md p-2">
+                                    Ordenes
+                                </Link>
+                            </li>
+                            <li className="cursor-pointer ">
+                                <Link to={'/admin/users'} className="flex gap-2 hover:bg-[#191919] rounded-md p-2">
+                                    Usuarios
+                                </Link>
+                            </li>
+                            <li className="cursor-pointer ">
+                                <Link to={'/admin/products'} className="flex gap-2 hover:bg-[#191919] rounded-md p-2">
+                                    Productos
+                                </Link>
+                            </li>
+                            <li className="cursor-pointer ">
+                                <Link to={'/admin/categories'} className="flex gap-2 hover:bg-[#191919] rounded-md p-2">
+                                    Categorias
+                                </Link>
+                            </li>
+                        </div>
                         : <div>
                             {categories.map((category) => (
                                 <li key={category.id} 
-                                    className={`mb-2 py-4 hover:bg-[#202020] flex items-center rounded-md 
+                                    className={`mb-2 py-2 hover:bg-[#202020] flex items-center rounded-md 
                                         ${categorySelected === category.id ? 'bg-[#fcf524] hover:bg-[#fcf524cd]' : ''}`} 
                                     onClick={() => filter(category.id)}>
                                     <img src={`../../public/img/icono_${category.icon}.svg`} alt={`img_${category.icon}`} className="w-8 h-8 pl-2"/>
@@ -53,6 +69,9 @@ export const Sidebar = ( { categories, categorySelected, filter, isAdmin = false
                             </li>
                         </div>
                     }
+                    { user.role === "admin" && <span className="p-6 flex gap-2 text-sm cursor-pointer hover:bg-[#191919]" >
+                        <Link to={'/admin'}> Admin dashboard </Link>
+                    </span>}
                     <span className="p-6 flex gap-2 text-sm cursor-pointer hover:bg-[#191919]" onClick={() => logout()}>
                         <PowerIcon/>
                         Cerrar sesión

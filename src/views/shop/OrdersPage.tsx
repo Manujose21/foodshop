@@ -4,6 +4,7 @@ import useSWR from "swr";
 import { client } from "../../axios/client";
 import { Order } from "../../types/interfaces";
 import { Button } from "../../components/Button";
+import { statusStyles } from "../../helpers/statusStyles";
 
 interface Link {
     next: string;
@@ -63,19 +64,7 @@ export const OredersPage = () => {
         }  
     }
 
-    const styleStatus = (status: string) => {
-        switch (status) {
-            case 'pending':
-                return 'text-yellow-400 bg-[#ffda3338]';
-            case 'completed':
-                return 'text-green-400 bg-[#36ff3322]';
-            case 'canceled':
-                return 'text-red-500 bg-[#ff333322]';
-            default:
-                return 'text-red-500';
-        }  
-    }
-
+ 
     const handlePaginate = (url: string) => {
         if (orders && orders?.meta.last_page > orders?.meta.current_page) {
             client.get(url, {
@@ -102,7 +91,7 @@ export const OredersPage = () => {
                                 <div className="flex justify-between items-center mb-2">
                                     <h2 className="text-xl font-semibold">Pedido #{order.id}</h2>
                                     <div className="">
-                                        <p className={`font-semibold p-2 rounded-[999px] ${styleStatus(order.status)}`}>{formatStatus(order.status)}</p>
+                                        <p className={`font-semibold p-2 rounded-[999px] ${statusStyles(order.status)}`}>{formatStatus(order.status)}</p>
                                     </div>
                                 </div>
                                 <p className="font-semibold">Productos</p>

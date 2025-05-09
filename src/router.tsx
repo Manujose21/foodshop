@@ -1,5 +1,4 @@
 import { createBrowserRouter } from 'react-router';
-import App from './App';
 import { AuthLayout } from './layouts/AuthLayout';
 import { LoginPage } from './views/LoginPage';
 import { RegisterPage } from './views/Register';
@@ -11,12 +10,21 @@ import { AOrdersPage } from './views/admin/AOrdersPage';
 import { AProductsPage } from './views/admin/AProductsPage';
 import { verifyIsAdmin } from './helpers/verifyIsAdmin';
 import { checkUser } from './helpers/checkUser';
+import { AUsersPage } from './views/admin/AUsersPage';
+import { ACategoriesPage } from './views/admin/ACategoriesPage';
+import { VerifyEmail } from './views/VerifyEmail';
 
 const router = createBrowserRouter([
 
     {
         path: '/',
-        element: <App />,
+        element: <AuthLayout />,
+        children: [
+            {
+                index: true,
+                element: <LoginPage />
+            },
+        ]
     },
     {
         path: '/auth',
@@ -34,7 +42,12 @@ const router = createBrowserRouter([
                 <>
                     <RegisterPage />
                 </>
+            },
+            {
+                path: 'verify-email',
+                element: <VerifyEmail />
             }
+
         ]
     },
     {
@@ -44,7 +57,7 @@ const router = createBrowserRouter([
             const isAuth = await checkUser();
             console.log(isAuth)
             if (!isAuth) {
-                throw new Response('No autorizado', { status: 401 });
+                window.location.href = '/auth/login';
             }
             return isAuth;
         },
@@ -76,7 +89,7 @@ const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element:<></>
+                element: <AUsersPage />
             },
             {
                 path: "orders",
@@ -85,7 +98,16 @@ const router = createBrowserRouter([
             {
                 path: "products",
                 element: <AProductsPage />
+            },
+            {
+                path: "users",
+                element: <AUsersPage />
+            },
+            {
+                path: "categories",
+                element: <ACategoriesPage />
             }
+            
         ]
     }
 

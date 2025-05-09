@@ -26,7 +26,15 @@ export const useAuth = () => {
             .then(res => res.data)
             .catch((e) => {
                 throw new Error(e.response?.data?.message || 'Failed to fetch user data');
-            }));
+            }),
+            {
+                revalidateOnFocus: false,
+                revalidateOnReconnect: false,
+                shouldRetryOnError: false,
+                refreshInterval: 0,
+                dedupingInterval: 0,
+            }
+        );
 
     const [errors, setErrors] = useState<string[]>([]);
 
@@ -44,8 +52,20 @@ export const useAuth = () => {
             }
 
             localStorage.setItem('auth_token', userData.data.token);
-            navigate('/shop');
+            if(userData.data.user.role === 'admin') {
+                navigate('/admin');
+                return;
+            }
+            
 
+            if( userData.data.user.email_verified_at === null) {
+                navigate('/auth/verify-email');
+                return;
+
+            }
+
+            navigate('/shop');
+        
         } catch (error) {
             console.error(error);
             if (error instanceof AxiosError) {
@@ -72,7 +92,8 @@ export const useAuth = () => {
             }
 
             localStorage.setItem('auth_token', userResponse.data.token);
-            await mutate();
+            
+            navigate('/auth/verify-email');
 
         } catch (error) {
             console.error(error);

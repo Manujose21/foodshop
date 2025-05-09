@@ -11,10 +11,10 @@ export const verifyIsAdmin = () => {
     return client.get('/user', {
         headers: { Authorization: `Bearer ${token}` }
     }).then((res) => {
-        if (res.data.role !== 'admin') {
-            return false;
+        if (res.data.role === 'admin') {
+            return res.data;
         }
-        return res.data;
+        return false;
     }).catch((e) => {
         console.error(e);
         return false;

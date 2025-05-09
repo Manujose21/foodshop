@@ -1,7 +1,8 @@
 export interface Category {
     icon: string;
     name: string;
-    id: number
+    id: number,
+    created_at: string;
 }
 type Categories = "all" | "Hamburguesas" | "Pizzas" | "Café" | "Donas" | "Pasteles" | "Galletas";
 export interface Product {
@@ -42,5 +43,7 @@ export interface Order {
             image: string;
         }
     ];
-    status: string;
+    status: 'pending' | 'completed' | 'cancelled';
+    user?: User;
+    created_at: string;
 }

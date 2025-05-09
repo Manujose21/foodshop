@@ -1,7 +1,6 @@
 import logo from '../public/img/logo.svg'
 import { Button } from './components/Button'
 import { Link } from 'react-router'
-import './index.css'
 import { useEffect } from 'react'
 function App() {
 
